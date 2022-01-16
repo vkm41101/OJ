@@ -21,10 +21,7 @@ const questionTestCaseSchema = new Schema({
   testCases: [testCaseSchema],
 });
 
-const questionTestCase = mongoose.model(
-  "questionTestCases",
-  questionTestCaseSchema
-);
+const questionTestCase = mongoose.model("questionTestCases", questionTestCaseSchema);
 
 /*
 test case upload
@@ -57,6 +54,8 @@ app.post("/:quesID", async (req, res) => {
       res.end("Updated");
     });
 });
+
+
 
 const server = app.listen(process.env.PORT || 3000, async function () {
   await mongoose.connect("mongodb://127.0.0.1:27017/OnlineJudgeDataBase");
