@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 
-const app = express();
-app.use(bodyParser.json());
+const router = express.Router();
+router.use(bodyParser.json());
 
 const Schema = mongoose.Schema;
 
@@ -31,14 +31,15 @@ test case upload
 }
 */
 
-app.post("/:quesID", async (req, res) => {
+router.post("/:quesID", async (req, res) => {
   const testcase = new testCase({
     input: req.body.inputSRC.toString(),
     output: req.body.outputSRC.toString(),
   });
   questionTestCase
     .find({ questionID: req.params.quesID.toString() })
-    .then(async (data) => {
+    .then(async (data) => 
+    {
       if (data.toString() == "") {
         const newTestCase = new questionTestCase({
           questionID: req.params.quesID,
@@ -55,11 +56,37 @@ app.post("/:quesID", async (req, res) => {
     });
 });
 
-
-
-const server = app.listen(process.env.PORT || 3000, async function () {
-  await mongoose.connect("mongodb://127.0.0.1:27017/OnlineJudgeDataBase");
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log("Listening http://%s:%s", host, port);
+router.get('/:quesID/:testCaseNumber', (req, res)=>{
+  if(req.params.testCaseNumber <=0)
+  {
+    res.status(400).send("Invalid Request: Invalid TestCase Number requested");
+  }
+  else
+  {
+    questionTestCase
+      .findOne({ questionID: req.params.quesID })
+      .then(async (data) => {
+        if (data == null) {
+          res.status(404).send("Invalid Request: Question Code Not Found");
+        } else {
+          var requiredTestCases = data.testCases;
+          try{
+            var requiredTestCase =requiredTestCases[req.params.testCaseNumber - 1];
+            res.send(
+              '{ "inputSRC": "' +
+                requiredTestCase.input +
+                '", "outputSRC": "' +
+                requiredTestCase.output +
+                '" \n}'
+            );
+          }
+          catch (e) {
+            res.status(400).send("Invalid Request")
+          }
+        }
+      });
+  }
 });
+
+module.exports = router;
+
