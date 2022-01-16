@@ -2,8 +2,7 @@ const express=require('express');
 const app=express();
 const mongoose=require('mongoose');
 const testCases=require('./routes/testCase.js');
-// const bodyParser = require("body-parser");
-// app.use(bodyParser.json());
+
 
 app.use('/testCase', testCases);
 
