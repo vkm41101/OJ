@@ -1,0 +1,34 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "Online Judge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "Online",
+    "Judge"
+  ],
+  "author": "Vivek Kumar Mishra",
+  "license": "ISC",
+  "dependencies": {
+    "amqp-connection-manager": "^4.0.1",
+    "amqplib": "^0.8.0",
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "mongoose": "^6.1.6",
+    "redis": "^4.0.2",
+    "sleep": "^6.3.0",
+    "validator": "^13.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vkm41101/OJ.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vkm41101/OJ/issues"
+  },
+  "homepage": "https://github.com/vkm41101/OJ#readme"
+}
