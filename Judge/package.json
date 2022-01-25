@@ -1,0 +1,11 @@
+{
+  "name": "ojudge",
+  "version": "1.0.0",
+  "description": "Worker app for OJ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vivek Kumar Mishra",
+  "license": "ISC"
+}
