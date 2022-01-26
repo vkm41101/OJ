@@ -80,5 +80,27 @@ router.get('/:quesID/:testCaseNumber', (req, res)=>{
   }
 });
 
+router.delete('/delete-all/:quesID', async (req, res)=>{
+  questionTestCase.findOne({questionID:req.params.quesID})
+  .then(async (data)=>{
+    if(data == null){
+      res.status(404).send("Invalid Request: Question Code Not Found");
+    }
+    else 
+    {
+      try{
+        questionTestCase.deleteOne({questionID: req.params.quesID})
+        .then(()=>{
+          res.status(200).send("All test Cases Deleted");
+        });
+      }
+      catch (err)
+      {
+        res.status(400).send("Invalid Request");
+      }
+    }
+  })
+})
+
 module.exports = router;
 
