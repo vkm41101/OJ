@@ -23,14 +23,6 @@ const questionTestCaseSchema = new Schema({
 
 const questionTestCase = mongoose.model("questionTestCases", questionTestCaseSchema);
 
-/*
-test case upload
-{
-  inputSRC:"dhjkb",
-  outputSRC:"hnn n"
-}
-*/
-
 router.post("/:quesID", async (req, res) => {
   const testcase = new testCase({
     input: req.body.inputSRC.toString(),

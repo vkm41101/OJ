@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const { json } = require("express/lib/response");
 const {sendMessage} = require('../config/rabbitMQ.js');
-const {getFromRedis, setInRedis} = require('../config/redis.js');
+const {setInRedis} = require('../config/redis.js');
 
-const app=express();
-app.use(bodyParser.json());
+const router=express.Router();
+router.use(bodyParser.json());
 
-app.post('/', async (req, res)=>{
+router.post('/', async (req, res)=>{
     console.log(req.body);
     var submissionID=new Date().getTime().toString(16);
     let data = {
@@ -24,13 +24,9 @@ app.post('/', async (req, res)=>{
     {
         await setInRedis(submissionID, 'InQueue');
         console.log('added To Queue')
-        res.status(200).send("{'status':'InQueue'}");
+        res.status(200).send("{'status':'InQueue', 'submissionID': '"+ submissionID + "' }");
     }
     else res.status(500).send("{'status':'SystemError'}");
 })
 
-const server = app.listen(process.env.PORT || 3000, async function () {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log("Listening http://%s:%s", host, port);
-});
+module.exports = router;
