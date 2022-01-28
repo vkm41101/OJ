@@ -99,8 +99,8 @@ router.delete('/delete-all/:quesID', async (req, res)=>{
         res.status(400).send("Invalid Request");
       }
     }
-  })
-})
+  });
+});
 
 module.exports = router;
 
