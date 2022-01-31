@@ -15,7 +15,7 @@ router.post('/', async (req, res)=>{
       language: req.body.language,
       timeOut: req.body.timeOut,
       src: req.body.src,
-      folder: submissionID,
+      submissionID: submissionID,
     };
     console.log(submissionID);
     var val= await sendMessage(data);
