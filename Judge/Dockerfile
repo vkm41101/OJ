@@ -18,4 +18,8 @@ RUN echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu focal main" | t
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 73C3DB2A
 RUN apt-get update
 RUN echo yes | apt-get install -y oracle-java17-installer
-RUN mkdir ~/folderrun
+RUN mkdir /home/folderrun
+RUN chmod 775 /home/folderrun
+RUN chmod g+s /home/folderrun
+RUN chmod u+x /home/folderrun
+RUN apt-get install sudo
