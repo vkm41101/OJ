@@ -3,6 +3,8 @@ const fs = require("fs");
 const { exec } = require("child_process");
 const { getFromRedis, setInRedis } = require("./redis.js");
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 amqp.connect("amqp://localhost", (error1, connection) => {
   if (error1) {
     throw error1;
@@ -42,7 +44,6 @@ amqp.connect("amqp://localhost", (error1, connection) => {
         if(extension!='Invalid')
         {
             setInRedis(fileID,'Processing');
-            // await exec("touch " + "/home/Personal Set/OJBh/Judge/folderrun/" + fileID + "." + extension);
             console.log('file name: '+'../folderrun/'+fileID+'.'+extension)
             await fs.writeFile("./Judge/folderrun/"+fileID+'.'+extension, message.src, (err) => {
                 if (err) {
@@ -51,7 +52,19 @@ amqp.connect("amqp://localhost", (error1, connection) => {
                 console.log("file Written");
               }
             );
-                channel.ack(msg);
+            exec('echo 51101 | sudo -S docker run -v /home/vivek/PersonalSet/OJBh/Judge/folderrun/:/home/folderrun/ -dt --memory="256m" --cpus="1" ubuntu-comp', (err,stdout, stderr)=>{
+              if(stderr)
+              {
+                throw stderr; 
+              }
+              exec("sudo docker ps -a", (err, stdout, stderr) => {
+                var lst = stdout.split(" ");
+                containerName = lst[lst.length - 1].split("\n")[0];
+              });
+            })
+            await exec("sudo docker stop $(sudo docker ps -a -q)");
+            await exec("sudo docker rm $(sudo docker ps -a -q)");
+            channel.ack(msg);
         }
     },
       {
