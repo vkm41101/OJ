@@ -94,6 +94,9 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
                   if (err || stderr) {
                     flag=false;
                     setInRedis(submissionID, "timeOut");
+                    
+                    var answerFile= __dirname+"/folderrun/outputAnswer/tc"+(0+1).toString()+"a.txt";
+                    execSync("sudo rm " + answerFile);
                     throw err;
                   }
                 }
@@ -101,6 +104,9 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
             } catch {
               flag = false;
               setInRedis(submissionID, "timeOut");
+
+              var answerFile= __dirname+"/folderrun/outputAnswer/tc"+(0+1).toString()+"a.txt";
+              execSync("sudo rm " + answerFile);
               return -5;
             }
           }
@@ -122,6 +128,8 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
               {
                 setInRedis(submissionID, "timeOut");
                 flag=false;
+                var answerFile= __dirname+"/folderrun/outputAnswer/tc"+(0+1).toString()+"a.txt";
+                execSync("sudo rm " + answerFile);
                 return -5;
               }
             });
@@ -159,6 +167,5 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
     }
     return 0;
 }
-
 
 module.exports = { runSubmission };
