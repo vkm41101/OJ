@@ -47,6 +47,7 @@ checkOutput = (submissionID, length) => {
 runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
     var testCases=[];
     var length=0;
+    flag=true;
     questionTestCase.findOne({questionID: quesID}).then(async (data)=>{
       if(data.toString()=='')
       {
@@ -94,9 +95,6 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
                   if (err || stderr) {
                     flag=false;
                     setInRedis(submissionID, "timeOut");
-                    
-                    var answerFile= __dirname+"/folderrun/outputAnswer/tc"+(0+1).toString()+"a.txt";
-                    execSync("sudo rm " + answerFile);
                     throw err;
                   }
                 }
@@ -104,9 +102,6 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
             } catch {
               flag = false;
               setInRedis(submissionID, "timeOut");
-
-              var answerFile= __dirname+"/folderrun/outputAnswer/tc"+(0+1).toString()+"a.txt";
-              execSync("sudo rm " + answerFile);
               return -5;
             }
           }
@@ -128,8 +123,6 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
               {
                 setInRedis(submissionID, "timeOut");
                 flag=false;
-                var answerFile= __dirname+"/folderrun/outputAnswer/tc"+(0+1).toString()+"a.txt";
-                execSync("sudo rm " + answerFile);
                 return -5;
               }
             });
