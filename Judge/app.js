@@ -161,10 +161,4 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
 }
 
 
-
-
-runSubmission("Q21", "test", "C++", "confident_lewin", 1000);
-
-// checkOutput('test', 3);
-
 module.exports = { runSubmission };
