@@ -1,23 +1,26 @@
 const amqp = require("amqplib/callback_api");
 const fs = require("fs");
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process");
 const { getFromRedis, setInRedis } = require("./redis.js");
+const { runSubmission } = require('../app.js');
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-amqp.connect("amqp://localhost", (error1, connection) => {
+var count=0;
+
+amqp.connect("amqp://localhost", async (error1, connection) => {
   if (error1) {
     throw error1;
   }
-  connection.createChannel((error2, channel) => {
+  connection.createChannel(async (error2, channel) => {
     const queueName = "onlineJudgeQueue";
     channel.assertQueue(queueName, {
       durable: true,
     });
     channel.prefetch(1);
-    channel.consume(
+    await channel.consume(
       queueName,
-      async (msg) => {
+      (msg) => {
         const message = JSON.parse(msg.content.toString());
         console.log(message);
         const fileID=message.submissionID;
@@ -45,26 +48,43 @@ amqp.connect("amqp://localhost", (error1, connection) => {
         {
             setInRedis(fileID,'Processing');
             console.log('file name: '+'../folderrun/'+fileID+'.'+extension)
-            await fs.writeFile("./Judge/folderrun/"+fileID+'.'+extension, message.src, (err) => {
+            fs.writeFileSync(__dirname+"/.."+"/folderrun/"+fileID+'.'+extension, message.src, async (err) => {
                 if (err) {
                   throw err;
                 }
                 console.log("file Written");
+                
               }
             );
-            exec('echo 51101 | sudo -S docker run -v /home/vivek/PersonalSet/OJBh/Judge/folderrun/:/home/folderrun/ -dt --memory="256m" --cpus="1" ubuntu-comp', (err,stdout, stderr)=>{
-              if(stderr)
-              {
-                throw stderr; 
+            var cmd='';
+            if(count == 0)
+            {
+              cmd='echo 51101 | sudo -S docker run -v /home/vivek/PersonalSet/OJBh/Judge/folderrun/:/home/folderrun/ -dt --memory="512m" --cpus="1" ubuntu-comp'
+              ++count;
+            }
+            else 
+            {
+              cmd='sudo docker run -v /home/vivek/PersonalSet/OJBh/Judge/folderrun/:/home/folderrun/ -dt --memory="512m" --cpus="1" ubuntu-comp'
+            }
+            exec(cmd, (err, stdout, stderr) => {
+                if (err) {
+                  throw err;
+                }
+                console.log("docker running");
+                exec(
+                  "sudo docker ps -a",async (err, stdout, stderr) => {
+                    var lst = stdout.split("\n");
+                    lst=lst[1].split(" ");
+                    containerName = lst[lst.length - 1].split("\n")[0];
+                    console.log(containerName);
+                    await runSubmission(message.questionID, fileID, message.language, containerName, message.timeOut*1000);
+                    await delay(2000);
+                    channel.ack(msg);
+                  }
+                );
               }
-              exec("sudo docker ps -a", (err, stdout, stderr) => {
-                var lst = stdout.split(" ");
-                containerName = lst[lst.length - 1].split("\n")[0];
-              });
-            })
-            await exec("sudo docker stop $(sudo docker ps -a -q)");
-            await exec("sudo docker rm $(sudo docker ps -a -q)");
-            channel.ack(msg);
+            );
+            
         }
     },
       {

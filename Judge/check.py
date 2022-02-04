@@ -20,6 +20,6 @@ if __name__ == '__main__':
     file1=args[1]
     file2=args[2]
     if(compareFiles(file1, file2)):
-        print("Correct Answer")
+        print("AC")
     else:
-        print("Wrong Answer")
+        print("WA")
