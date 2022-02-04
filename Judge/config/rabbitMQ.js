@@ -24,7 +24,6 @@ amqp.connect("amqp://localhost", async (error1, connection) => {
         const message = JSON.parse(msg.content.toString());
         console.log(message);
         const fileID=message.submissionID;
-        console.log(message.language=="C");
         var extension='cpp';
         if(message.language=='python3')
         {
@@ -47,7 +46,6 @@ amqp.connect("amqp://localhost", async (error1, connection) => {
         }
         if(extension!='Invalid')
         {
-            console.log(extension);
             setInRedis(fileID,'Processing');
             console.log('file name: '+'../folderrun/'+fileID+'.'+extension)
             fs.writeFileSync(__dirname+"/.."+"/folderrun/"+fileID+'.'+extension, message.src, async (err) => {
