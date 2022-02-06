@@ -19,19 +19,19 @@ This API Runs Code submissions in a secure environment and Passes Verdicts based
  ### Clone the Repository
 
  Run the following Command to clone the repository:
- '''
+ '''sh
  git clone https://github.com/vkm41101/OJ.git
  '''
 
  ### Run the Server
 
- '''
+ '''sh
 node Server/server.js
  '''
 
  ### Run The Judge
 
- '''
+ '''sh
 node Judge/config/rabbitMQ.js
  '''
 
