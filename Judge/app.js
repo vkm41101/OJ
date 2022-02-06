@@ -20,7 +20,7 @@ const testCaseSchema = new Schema({
 var questionTestCase = mongoose.model(
   "questionTestCases",
   new Schema({ questionID: String, testCases: [testCaseSchema] }, { collection: "questiontestcases" })
-); 
+);
 
 var flag=true;
 
@@ -107,7 +107,7 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
           }
         })
       }
-      else 
+      else
       {
         var executeCommand = "python3 /home/folderrun/"+submissionID+".py "
         for(let i = 0; i<length; i++)
@@ -116,7 +116,7 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
           outputPath = 'home/folderrun/outputAnswer/tc'+(i+1).toString()+'a.txt'
           executeCommand1 = executeCommand + " < " + inputPath + " > " + outputPath;
           console.log("sudo docker exec -it " + containerName + ' /bin/sh -c "' + executeCommand1 + '"');
-          try 
+          try
           {
             execSync("sudo docker exec " + containerName + ' /bin/sh -c "' + executeCommand1 + '"', {timeout: timeOut},(err, stdout, stderr)=>{
               if(err || stderr)
@@ -138,7 +138,7 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
 
     });
     await delay(2000);
-    await exec("sudo docker stop "+containerName, (err,  stdout, stderr)=>{
+    await execSync("sudo docker stop "+containerName, (err,  stdout, stderr)=>{
       console.log("Docker stopped")
     });
     await exec("sudo docker rm " + containerName, (err, stdout, stderr) => {
