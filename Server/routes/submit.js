@@ -11,12 +11,13 @@ router.post('/', async (req, res)=>{
     console.log(req.body);
     var submissionID=new Date().getTime().toString(16);
     let data = {
-      questionID: req.body.quesID,
+      questionID: req.body.questionID,
       language: req.body.language,
       timeOut: req.body.timeOut,
       src: req.body.src,
       submissionID: submissionID,
     };
+    console.log(data.questionID);
     console.log(submissionID);
     var val= await sendMessage(data);
     console.log(val);

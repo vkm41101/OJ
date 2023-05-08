@@ -31,9 +31,9 @@ checkOutput = (submissionID, length) => {
   {
     testFile= __dirname+'/folderrun/sampleTestCase/tc'+(i+1).toString()+'o.txt';
     outputFile= __dirname + '/folderrun/outputAnswer/tc' + (i+1).toString()+'a.txt';
-    // console.log("python3 " + __dirname + "/check.py " + testFile + " " + outputFile);
-    exec("python3 " + __dirname + "/check.py " + testFile + " " + outputFile, (err, stdout, stderr) => {
-      // console.log(stdout);
+    console.log("python " + __dirname + "/check.py " + testFile + " " + outputFile);
+    exec("python " + __dirname + "/check.py " + testFile + " " + outputFile, (err, stdout, stderr) => {
+      console.log(stdout);
       if(stdout == "WA\n")
       {
         setInRedis(submissionID, 'WA');
@@ -48,7 +48,9 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
     var testCases=[];
     var length=0;
     flag=true;
+    console.log(quesID);
     questionTestCase.findOne({questionID: quesID}).then(async (data)=>{
+      // console.log(data);
       if(data.toString()=='')
       {
           return -1;
@@ -75,10 +77,12 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
         {
           compileCommand="";
         }
-        exec("sudo docker exec " + containerName + " " + compileCommand, (err, stdout, stderr)=>{
+        console.log("docker exec " + containerName + " " + compileCommand);
+        exec("docker exec " + containerName + " " + compileCommand, (err, stdout, stderr)=>{
           if(err || stderr)
           {
             flag=false;
+            console.log(stderr);
             setInRedis(submissionID, "CE");
             // throw err;
             return -5;
@@ -89,9 +93,9 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
             inputPath = "home/folderrun/sampleTestCase/tc" + (i + 1).toString() + "i.txt";
             outputPath = 'home/folderrun/outputAnswer/tc'+(i+1).toString()+'a.txt'
             executeCommand1 = executeCommand + " < " + inputPath + " > " + outputPath;
-            console.log("sudo docker exec -it " + containerName + ' /bin/sh -c "' + executeCommand1 + '"');
+            console.log("docker exec -it " + containerName + ' /bin/sh -c "' + executeCommand1 + '"');
             try {
-              execSync("sudo docker exec " + containerName + ' /bin/sh -c "' + executeCommand1 + '"', { timeout: timeOut }, (err, stdout, stderr) => {
+              execSync("docker exec " + containerName + ' /bin/sh -c "' + executeCommand1 + '"', { timeout: timeOut }, (err, stdout, stderr) => {
                   if (err || stderr) {
                     flag=false;
                     setInRedis(submissionID, "timeOut");
@@ -109,18 +113,19 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
       }
       else
       {
-        var executeCommand = "python3 /home/folderrun/"+submissionID+".py "
+        var executeCommand = "python /home/folderrun/"+submissionID+".py "
         for(let i = 0; i<length; i++)
         {
           inputPath = "home/folderrun/sampleTestCase/tc" + (i + 1).toString() + "i.txt";
           outputPath = 'home/folderrun/outputAnswer/tc'+(i+1).toString()+'a.txt'
           executeCommand1 = executeCommand + " < " + inputPath + " > " + outputPath;
-          console.log("sudo docker exec -it " + containerName + ' /bin/sh -c "' + executeCommand1 + '"');
+          console.log("docker exec -it " + containerName + ' /bin/sh -c "' + executeCommand1 + '"');
           try
           {
-            execSync("sudo docker exec " + containerName + ' /bin/sh -c "' + executeCommand1 + '"', {timeout: timeOut},(err, stdout, stderr)=>{
+            execSync("docker exec " + containerName + ' /bin/sh -c "' + executeCommand1 + '"', {timeout: timeOut},(err, stdout, stderr)=>{
               if(err || stderr)
               {
+                console.log(err);
                 setInRedis(submissionID, "timeOut");
                 flag=false;
                 return -5;
@@ -138,10 +143,10 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
 
     });
     await delay(2000);
-    await execSync("sudo docker stop "+containerName, (err,  stdout, stderr)=>{
+    await execSync("docker stop "+containerName, (err,  stdout, stderr)=>{
       console.log("Docker stopped")
     });
-    await exec("sudo docker rm " + containerName, (err, stdout, stderr) => {
+    await exec("docker rm " + containerName, (err, stdout, stderr) => {
       console.log("Docker deleted");
     });
     if(flag)
@@ -150,12 +155,12 @@ runSubmission= async (quesID, submissionID, language, containerName,timeOut) =>{
       await delay(length*3000);
       for(var i=0; i<length; ++i)
       {
-        var answerFile= __dirname+"/folderrun/outputAnswer/tc"+(i+1).toString()+"a.txt";
-        var inputFile= __dirname+"/folderrun/sampleTestCase/tc"+(i+1).toString()+"i.txt";
-        var outputFile= __dirname+"/folderrun/sampleTestCase/tc"+(i+1).toString()+"o.txt";
-        execSync("sudo rm "+answerFile);
-        execSync("sudo rm " + inputFile);
-        execSync("sudo rm " + outputFile);
+        var answerFile= __dirname+"\\folderrun\\outputAnswer\\tc"+(i+1).toString()+"a.txt";
+        var inputFile= __dirname+"\\folderrun\\sampleTestCase\\tc"+(i+1).toString()+"i.txt";
+        var outputFile= __dirname+"\\folderrun\\sampleTestCase\\tc"+(i+1).toString()+"o.txt";
+        execSync("del /f "+answerFile);
+        execSync("del /f " + inputFile);
+        execSync("del /f " + outputFile);
       }
     }
     return 0;
